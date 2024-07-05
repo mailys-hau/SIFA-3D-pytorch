@@ -6,7 +6,7 @@ import math
 import numpy as np
 
 
-    
+
 def dice_loss(predict,target):
     target = target.float()
     smooth = 1e-4
@@ -20,7 +20,7 @@ class DiceLoss(nn.Module):
     def __init__(self,n_classes):
         super().__init__()
         self.n_classes = n_classes
-        
+
     def one_hot_encode(self,input_tensor):
         tensor_list = []
         for i in range(self.n_classes):
@@ -28,7 +28,7 @@ class DiceLoss(nn.Module):
             tensor_list.append(tmp)
         output_tensor = torch.cat(tensor_list,dim=1)
         return output_tensor.float()
-    
+
 
     def forward(self,input,target,weight=None,softmax=True):
         if softmax:
@@ -79,16 +79,16 @@ class DiceCeLoss(nn.Module):
         self.num_classes = num_classes
         self.diceloss = DiceLoss(self.num_classes)
         self.celoss = WeightedCrossEntropyLoss(self.num_classes)
-        
+
     def forward(self,predict,label):
         #predict is output of the model, i.e. without softmax [N,C,*]
         #label is not one hot encoding [N,1,*]
-        
+
         diceloss = self.diceloss(predict,label)
         celoss = self.celoss(predict,label)
         loss = celoss + self.alpha * diceloss
         return loss
-        
+
 class NCC:
     """
     Local (over window) normalized cross correlation loss.

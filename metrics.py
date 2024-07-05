@@ -1,5 +1,10 @@
 import numpy as np
+
 from medpy import metric
+from pysdf import SDF
+from skimage.measure import marching_cubes
+
+
 
 def dice_eval(predict,label,num_classes):
     #Computer Dice coefficient
@@ -11,7 +16,7 @@ def dice_eval(predict,label,num_classes):
         gt_sum = np.sum(label==c,dtype=np.float32)
         dice[c] = (inter+eps)/(p_sum+gt_sum+eps)
     return dice[1:]
-    
+
 def assd_eval(predict,label,num_classes):
     #Average Symmetric Surface Distance (ASSD)
     assd_all = np.zeros(num_classes)
@@ -20,18 +25,34 @@ def assd_eval(predict,label,num_classes):
         result = (predict==c) * 1
         assd_all[c] = metric.binary.assd(result,reference)
     return assd_all[1:]
-    
+
+def _vox2coord(vox):
+    spacing = (0.5, 0.5, 0.5)
+    verts, faces, _, _ = marching_cubes(vox, None, spacing=spacing, step_stride=1,
+                                        allow_degenerate=False, mask=None)
+    # We assume dir.diag = [1, 1, 1] and O = [0, 0, 0]
+    return verts, faces
+
+def assd_eval_3d(pred, gt, nclasses):
+    assd = np.zeros(nclasses)
+    for c in range(nclasses):
+        gt_sdf = SDF(*_vox2coord((gt == c).astype(int)))
+        verts, _ = _vox2coord((pred ==  c).astype(int))
+        assd[c] = gt_sdf(verts)
+    return assd
+
+
 def create_visual_anno(anno):
     assert np.max(anno) < 7 # only 7 classes are supported, add new color in label2color_dict
     label2color_dict = {
         0: [0, 0, 0],
-        1: [0,0,255],  
-        2: [0, 255, 0], 
-        3: [0, 0, 255], 
-        4: [255, 215, 0],  
-        5: [160, 32, 100],  
-        6: [255, 64, 64],  
-        7: [139, 69, 19],  
+        1: [0, 0, 255],
+        2: [0, 255 , 0],
+        3: [0, 0, 255],
+        4: [255, 215, 0],
+        5: [160, 32, 100],
+        6: [255, 64, 64],
+        7: [139, 69, 19],
     }
     # visualize
     visual_anno = np.zeros((anno.shape[0], anno.shape[1], 3), dtype=np.uint8)
@@ -41,5 +62,4 @@ def create_visual_anno(anno):
             visual_anno[i, j, 0] = color[0]
             visual_anno[i, j, 1] = color[1]
             visual_anno[i, j, 2] = color[2]
-
     return visual_anno
