@@ -1,0 +1,11 @@
+# Python trash files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Vim trash files
+*.swp
+*.swo
+
+# Don't push heavy files
+data/
