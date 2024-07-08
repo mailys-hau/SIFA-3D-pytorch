@@ -1,5 +1,4 @@
 #Evaluate of SIFA
-import cv2
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -40,7 +39,7 @@ def test():
     root = Path(config["test"]["save_path"]).expanduser().joinpath(exp_name)
     pmodel = root.joinpath(config["test"]["test_model"])
 
-    device = torch.device(f"cuda:{config['test']['gpu']}"))
+    device = torch.device(f"cuda:{config['test']['gpu']}")
     test_path = config['test']['test_path']
     num_classes = config['test']['num_classes']
     sifa_model = SIFA(config, "test").to(device)
@@ -99,7 +98,7 @@ def test():
         if (metric == []).all(): #FIXME: Temporary patch to lack of ASSD 3D
             continue
         mean, std = metric.mean(axis=0), metric.std(axis=0)
-        tab.add_row(name, f"{mean[0]} ± {std[0]}", f"{mean[1]} ± {std[1]}", f"{metric.mean() ± metric.std()}")
+        tab.add_row(name, f"{mean[0]} ± {std[0]}", f"{mean[1]} ± {std[1]}", f"{metric.mean()} ± {metric.std()}")
     console = Console(record=True)
     console.print(tab), console.save_text(results.joinpath("metrics-summary.txt"))
 

@@ -26,7 +26,7 @@ class SIFA(nn.Module):
         num_classes = params[mode]['num_classes']
         lr_seg = params[mode]['lr_seg']
         lr = params[mode]['lr']
-        dim = params[mode]["dimensions"]
+        dim = params[mode]["dimension"]
         self.skip = params[mode]['skip']
         #network
         self.gen = SIFAGenerator(dimensions=dim, skip=self.skip)
@@ -171,7 +171,7 @@ class SIFA(nn.Module):
             for net in nets:
                 elt = denorm(getattr(self, net))[i].squeeze(0).detach().cpu().numpy()
                 fname = eval(f'f"""{template}"""')
-                sikt.WriteImage(sitk.GetImageFromArray(elt), fname)
+                sitk.WriteImage(sitk.GetImageFromArray(elt), fname)
 
     def print_loss(self, epoch):
         print(f'------------ Epoch-{epoch + 1:03d} ------------')
