@@ -6,6 +6,7 @@ import numpy as np
 import os
 import torch
 import yaml
+import SimpleITK as sitk
 
 from pathlib import Path
 from rich.console import Console
@@ -71,9 +72,9 @@ def test():
             #gt_vis = create_visual_anno(gt)
             results = root.joinpath("evaluation-results")
             results.mkdir(parents=True, exist_ok=True)
-            sitk.WriteImage(sikt.GetImageFromArray(xt), results.joinpath(f"xt-{it + 1}.nii.gz"))
-            sitk.WriteImage(sikt.GetImageFromArray(gt), results.joinpath(f"gt-{it + 1}.nii.gz"))
-            sitk.WriteImage(sikt.GetImageFromArray(output), results.joinpath(f"output-{it + 1}.nii.gz"))
+            sitk.WriteImage(sitk.GetImageFromArray(xt), results.joinpath(f"xt-{it + 1}.nii.gz"))
+            sitk.WriteImage(sitk.GetImageFromArray(gt), results.joinpath(f"gt-{it + 1}.nii.gz"))
+            sitk.WriteImage(sitk.GetImageFromArray(output), results.joinpath(f"output-{it + 1}.nii.gz"))
 
             #FIXME: Make it a bit more pretty
             one_case_dice = dice_eval(output, xt_label, num_classes) * 100
