@@ -4,6 +4,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import SimpleITK as sitk
 import torch
 import yaml
 
@@ -71,9 +72,9 @@ def test():
             #gt_vis = create_visual_anno(gt)
             results = root.joinpath("evaluation-results")
             results.mkdir(parents=True, exist_ok=True)
-            sitk.WriteImage(sikt.GetImageFromArray(xt), results.joinpath(f"xt-{it + 1}.nii.gz"))
-            sitk.WriteImage(sikt.GetImageFromArray(gt), results.joinpath(f"gt-{it + 1}.nii.gz"))
-            sitk.WriteImage(sikt.GetImageFromArray(output), results.joinpath(f"output-{it + 1}.nii.gz"))
+            sitk.WriteImage(sitk.GetImageFromArray(xt), results.joinpath(f"xt-{it + 1}.nii.gz"))
+            sitk.WriteImage(sitk.GetImageFromArray(gt), results.joinpath(f"gt-{it + 1}.nii.gz"))
+            sitk.WriteImage(sitk.GetImageFromArray(output), results.joinpath(f"output-{it + 1}.nii.gz"))
 
             #FIXME: Make it a bit more pretty
             one_case_dice = dice_eval(output, xt_label, num_classes) * 100
@@ -95,7 +96,7 @@ def test():
     tab.add_column("Posterior leaflet", style="cyan")
     tab.add_column("Aggregate", justify="right", style="yellow")
     for name, metric in zip(["Dice", "ASSD"], [all_dice, all_assd]):
-        if (metric == []).all(): #FIXME: Temporary patch to lack of ASSD 3D
+        if metric.size == 0: #FIXME: Temporary patch to lack of ASSD 3D
             continue
         mean, std = metric.mean(axis=0), metric.std(axis=0)
         tab.add_row(name, f"{mean[0]} ± {std[0]}", f"{mean[1]} ± {std[1]}", f"{metric.mean()} ± {metric.std()}")
