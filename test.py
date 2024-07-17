@@ -4,6 +4,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import SimpleITK as sitk
 import torch
 import yaml
 import SimpleITK as sitk
@@ -96,7 +97,7 @@ def test():
     tab.add_column("Posterior leaflet", style="cyan")
     tab.add_column("Aggregate", justify="right", style="yellow")
     for name, metric in zip(["Dice", "ASSD"], [all_dice, all_assd]):
-        if (metric == []).all(): #FIXME: Temporary patch to lack of ASSD 3D
+        if metric.size == 0: #FIXME: Temporary patch to lack of ASSD 3D
             continue
         mean, std = metric.mean(axis=0), metric.std(axis=0)
         tab.add_row(name, f"{mean[0]} ± {std[0]}", f"{mean[1]} ± {std[1]}", f"{metric.mean()} ± {metric.std()}")
